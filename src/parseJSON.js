@@ -2,47 +2,47 @@
 // var parseJSON = JSON.parse;
 
 // but you're not, so you'll write it from scratch:
-var parseJSON = function (json) {
+const parseJSON = (json) => {
 
-  var identifyString = function (first, last) {
+  const identifyString = (first, last) => {
     return function (str) {
       return first === str[0] && last === str[str.length - 1];
     };
   };
 
-  var isArray = identifyString('[', ']');
-  var isObject = identifyString('{', '}');
-  var isSingle = identifyString("'", "'");
-  var isDouble = identifyString('"', '"');
+  let isArray = identifyString('[', ']');
+  let isObject = identifyString('{', '}');
+  let isSingle = identifyString("'", "'");
+  let isDouble = identifyString('"', '"');
 
-  var isNumber = function (str) {
+  const isNumber = (str) => {
     return + str + '' === str
   }
 
-  var isString = function (str) {
+  const isString = (str) => {
     str = str.trim();
     return (isDouble(str) || isSingle(str)) && str[str.length - 2] !== '\\'
   };
 
-  var quotes = function (str) {
+  const quotes = (str) => {
     str = str.trim()
     // if (input[0] === '\"' && input[input.length - 1] === '\"') {
     return str.substring(1).slice(0, str.length - 2) || ''
   }
 
-  var splitString = function (inputChar) {
+  const splitString = (inputChar) => {
     return function (str) {
-      var outputArr = [];
-      var arrayString = '';
-      var lastCharacter = '';
-      var insideArr = false;
-      var insideObj = false;
-      var arrBox = 0;
-      var objBox = 0;
-      var inDoubleQuotes = false;
-      var inSingleQuotes = false;
+      let outputArr = [];
+      let arrayString = '';
+      let lastCharacter = '';
+      let insideArr = false;
+      let insideObj = false;
+      let arrBox = 0;
+      let objBox = 0;
+      let inDoubleQuotes = false;
+      let inSingleQuotes = false;
       for (var i = 0; i < str.length; i++) {
-        var characterCheck = str[i];
+        let characterCheck = str[i];
 
         if (characterCheck === '"') {
           inDoubleQuotes = !inDoubleQuotes;
@@ -88,15 +88,14 @@ var parseJSON = function (json) {
       if (arrayString.length > 0){
         outputArr.push(arrayString.trim());
       }
-      console.log(outputArr)
       return outputArr;
     }
   }
 
-  var findCommas = splitString(',');
-  var findColons = splitString(':');
+  let findCommas = splitString(',');
+  let findColons = splitString(':');
 
-  var decipherType = function (str, parent) {
+  const decipherType = (str, parent) => {
     str = str.trim();
 
     if (isArray(str)) {
@@ -104,15 +103,14 @@ var parseJSON = function (json) {
     }
 
     if (isObject(str)) {
-      var formatted = {}
-      var arrayObj = findCommas(quotes(str))
+      let formatted = {}
+      let arrayObj = findCommas(quotes(str))
       arrayObj.forEach(function (key, index) {
-        var organizeObj = findColons(key)
+        let organizeObj = findColons(key)
         if (organizeObj.length === 2) {
           formatted[decipherType(organizeObj[0])] = decipherType(organizeObj[1])
         }
       })
-      console.log(formatted)
       return formatted;
     }
 
@@ -135,9 +133,7 @@ var parseJSON = function (json) {
     if (isNumber(str)){
       return +str
     } 
-    // if (str === Number(json)) {
-    //   return Number(json);
-    // }
+  
     throw SyntaxError('invalid stringified JSON')
   }
   return decipherType(json)
